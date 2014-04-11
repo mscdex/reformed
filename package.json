@@ -1,0 +1,19 @@
+{ "name": "reformed",
+  "version": "0.0.0",
+  "author": "Brian White <mscdex@mscdex.net>",
+  "description": "A high-level form field handling and validation module for busboy",
+  "main": "./lib/main",
+  "engines": { "node": "0.10.x" },
+  "devDependencies": {
+    "connect-busboy": "0.0.x",
+    "busboy": "0.2.x",
+    "request": "2.34.x",
+    "express": "4.0.x"
+  },
+  "scripts": {
+    "test": "node test/tests.js"
+  },
+  "keywords": [ "form", "forms", "validation", "busboy", "html", "connect", "express" ],
+  "licenses": [ { "type": "MIT", "url": "https://github.com/mscdex/reformed/raw/master/LICENSE" } ],
+  "repository": { "type": "git", "url": "https://github.com/mscdex/reformed.git" }
+}
