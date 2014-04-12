@@ -34,16 +34,8 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
-    expected: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
+    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     what: 'Simple fields, defaults, no validation'
   },
   { run: function() {
@@ -74,16 +66,8 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
-    expected: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
+    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     what: 'Simple fields, defaults, regexp validation'
   },
   { run: function() {
@@ -116,11 +100,7 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     expected: undefined,
     what: 'Simple fields, defaults, regexp validation fails (2nd field)'
   },
@@ -155,16 +135,8 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
-    expected: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
+    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     what: 'Simple fields, defaults, sync function validation'
   },
   { run: function() {
@@ -200,11 +172,7 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     expected: undefined,
     what: 'Simple fields, defaults, sync function validation fails (last field)'
   },
@@ -240,16 +208,8 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
-    expected: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
+    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     what: 'Simple fields, defaults, async function validation'
   },
   { run: function() {
@@ -286,31 +246,17 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
-    expected: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
+    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     what: 'Simple fields, defaults, async function validation fails (last field)'
   },
   { run: function() {
       var self = this,
           what = this.what,
           form = new Form({
-            firstName: {
-              required: true
-            },
-            lastName: {
-              required: true
-            },
-            occupation: {
-              required: true
-            }
+            firstName: { required: true },
+            lastName: { required: true },
+            occupation: { required: true }
           }),
           srvclose;
       makeServer(this.bbopts, function(port, fnclose) {
@@ -326,31 +272,17 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: ''
-    },
-    expected: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: ''
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: '' },
+    expected: { firstName: 'Foo', lastName: 'Bar', occupation: '' },
     what: 'Simple fields, all required'
   },
   { run: function() {
       var self = this,
           what = this.what,
           form = new Form({
-            firstName: {
-              required: true
-            },
-            lastName: {
-              required: true
-            },
-            occupation: {
-              required: true
-            }
+            firstName: { required: true },
+            lastName: { required: true },
+            occupation: { required: true }
           }),
           srvclose;
       makeServer(this.bbopts, function(port, fnclose) {
@@ -368,24 +300,77 @@ var tests = [
       });
     },
     bbopts: {},
-    reqdata: {
-      firstName: 'Foo',
-      lastName: 'Bar'
-    },
-    expected: {
-      firstName: 'Foo',
-      lastName: 'Bar',
-      occupation: 'Baz'
-    },
+    reqdata: { firstName: 'Foo', lastName: 'Bar' },
+    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
     what: 'Simple fields, all required, last one missing'
+  },
+  { run: function() {
+      var self = this,
+          what = this.what,
+          form = new Form({
+            num: { dataType: Number },
+            str: {},
+            timestamp: { dataType: Date.parse }
+          }),
+          srvclose;
+      makeServer(this.bbopts, function(port, fnclose) {
+        srvclose = fnclose;
+        post(port, self.reqdata);
+      }, function(bb) {
+        srvclose();
+        form.parse(bb, function(err) {
+          assert(!err, makeMsg(what, 'Unexpected form parse error: ' + err));
+          assertDataEquals(self.expected, form.data);
+          next();
+        });
+      });
+    },
+    bbopts: {},
+    reqdata: {
+      num: '007',
+      str: 'foo',
+      timestamp: 'Fri Apr 11 2014 22:06:39 GMT-0400'
+    },
+    expected: { num: 7, str: 'foo', timestamp: 1397268399000 },
+    what: 'Simple field value conversion'
+  },
+  { run: function() {
+      var self = this,
+          what = this.what,
+          form = new Form({
+            words: { multiple: true },
+            nums: { multiple: true }
+          }),
+          srvclose;
+      makeServer(this.bbopts, function(port, fnclose) {
+        srvclose = fnclose;
+        post(port, self.reqdata);
+      }, function(bb) {
+        srvclose();
+        form.parse(bb, function(err) {
+          assert(!err, makeMsg(what, 'Unexpected form parse error: ' + err));
+          assertDataEquals(self.expected, form.data);
+          next();
+        });
+      });
+    },
+    bbopts: {},
+    reqdata: { words: [ 'hello', 'world', 'foo' ], nums: 5 },
+    expected: { words: [ 'hello', 'world', 'foo' ], nums: [ 5 ] },
+    what: 'Simple fields with `multiple` set'
   },
 ];
 
 function post(port, formvals) {
   var reqform = request.post('http://localhost:' + port).form(),
       key;
-  for (key in formvals)
-    reqform.append(key, formvals[key]);
+  for (key in formvals) {
+    if (Array.isArray(formvals[key])) {
+      for (var i = 0, len = formvals[key].length; i < len; ++i)
+        reqform.append(key, formvals[key][i]);
+    } else
+      reqform.append(key, formvals[key]);
+  }
 }
 
 function makeServer(bbopts, srvCb, reqCb) {
@@ -396,7 +381,7 @@ function makeServer(bbopts, srvCb, reqCb) {
             hadError = false,
             bb,
             key;
-        for (key in bbopts)
+        for (key in (bbopts || {}))
           cfg[key] = bbopts[key];
         cfg.headers = req.headers;
         bb = new Busboy(cfg);
