@@ -95,7 +95,7 @@ var tests = [
           assert(err, makeMsg(what, 'Expected form parse error'));
           assert(err.key === 'lastName',
                  makeMsg(what, 'Wrong failed field key: ' + err.key));
-          assert(form.data === undefined, makeMsg(what, 'Unexpected data'));
+          assertDataEquals(self.expected, form.data);
           next();
         });
       });
@@ -167,7 +167,7 @@ var tests = [
           assert(err, makeMsg(what, 'Expected form parse error'));
           assert(err.key === 'occupation',
                  makeMsg(what, 'Wrong failed field key: ' + err.key));
-          assert(form.data === undefined, makeMsg(what, 'Unexpected data'));
+          assertDataEquals(self.expected, form.data);
           next();
         });
       });
@@ -241,14 +241,14 @@ var tests = [
           assert(err, makeMsg(what, 'Expected form parse error'));
           assert(err.key === 'occupation',
                  makeMsg(what, 'Wrong failed field key: ' + err.key));
-          assert(form.data === undefined, makeMsg(what, 'Unexpected data'));
+          assertDataEquals(self.expected, form.data);
           next();
         });
       });
     },
     bbopts: {},
     reqdata: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
-    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
+    expected: undefined,
     what: 'Simple fields, defaults, async function validation fails (last field)'
   },
   { run: function() {
@@ -295,14 +295,14 @@ var tests = [
           assert(err, makeMsg(what, 'Expected form parse error'));
           assert(err.key === 'occupation',
                  makeMsg(what, 'Wrong failed field key: ' + err.key));
-          assert(form.data === undefined, makeMsg(what, 'Unexpected data'));
+          assertDataEquals(self.expected, form.data);
           next();
         });
       });
     },
     bbopts: {},
     reqdata: { firstName: 'Foo', lastName: 'Bar' },
-    expected: { firstName: 'Foo', lastName: 'Bar', occupation: 'Baz' },
+    expected: undefined,
     what: 'Simple fields, all required, last one missing'
   },
   { run: function() {
