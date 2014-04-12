@@ -360,7 +360,106 @@ var tests = [
     expected: { words: [ 'hello', 'world', 'foo' ], nums: [ 5 ] },
     what: 'Simple fields with `multiple` set'
   },
+  { run: function() {
+      var self = this,
+          what = this.what,
+          form = new Form({
+            csv: { filename: false, encoding: 'utf8' },
+            image: { filename: false }
+          }),
+          srvclose;
+      makeServer(this.bbopts, function(port, fnclose) {
+        srvclose = fnclose;
+        post(port, self.reqdata);
+      }, function(bb) {
+        srvclose();
+        form.parse(bb, function(err) {
+          assert(!err, makeMsg(what, 'Unexpected form parse error: ' + err));
+          assertDataEquals(self.expected, form.data);
+          next();
+        });
+      });
+    },
+    bbopts: {},
+    // bw 4/11/13 -- request/form-data/combined-stream/delayed-stream somehow
+    // ends up missing all stream data even on node v0.10 where streams are
+    // "paused" from the start, so we pause explicitly as a workaround ...
+    reqdata: pauseFileStreams({
+      csv: fs.createReadStream(path.join(fixturesdir, 'data.csv')),
+      image: fs.createReadStream(path.join(fixturesdir, 'image.jpg'))
+    }),
+    expected: {
+      csv: {
+        data: fs.readFileSync(path.join(fixturesdir, 'data.csv'), 'utf8'),
+        size: fs.statSync(path.join(fixturesdir, 'data.csv')).size
+      },
+      image: {
+        data: fs.readFileSync(path.join(fixturesdir, 'image.jpg')),
+        size: fs.statSync(path.join(fixturesdir, 'image.jpg')).size
+      }
+    },
+    what: 'Buffered file fields with/without encoding'
+  },
+  { run: function() {
+      var self = this,
+          what = this.what,
+          form = new Form({
+            csv: { filename: path.join(tmpdir, 'data.csv') },
+            image: { filename: '' }
+          }, { tmpdir: tmpdir }),
+          srvclose;
+      makeServer(this.bbopts, function(port, fnclose) {
+        srvclose = fnclose;
+        post(port, self.reqdata);
+      }, function(bb) {
+        srvclose();
+        form.parse(bb, function(err) {
+          assert(!err, makeMsg(what, 'Unexpected form parse error: ' + err));
+          self.expected.csv.size = fs.statSync(path.join(tmpdir, 'data.csv'))
+                                     .size;
+          // temp filename is unknown beforehand, so we fill this in at runtime
+          self.expected.image.filename = path.join(tmpdir,
+                                                   fs.readdirSync(tmpdir)
+                                                     .filter(function(v) {
+                                                       return /\.tmp$/.test(v);
+                                                     })[0]);
+          self.expected.image.size = fs.statSync(self.expected.image.filename)
+                                       .size;
+          assertDataEquals(self.expected, form.data);
+          next();
+        });
+      });
+    },
+    bbopts: {},
+    // bw 4/11/13 -- request/form-data/combined-stream/delayed-stream somehow
+    // ends up missing all stream data even on node v0.10 where streams are
+    // "paused" from the start, so we pause explicitly as a workaround ...
+    reqdata: pauseFileStreams({
+      csv: fs.createReadStream(path.join(fixturesdir, 'data.csv')),
+      image: fs.createReadStream(path.join(fixturesdir, 'image.jpg'))
+    }),
+    expected: {
+      csv: {
+        filename: path.join(tmpdir, 'data.csv'),
+        size: 0 // filled in at runtime
+      },
+      image: {
+        filename: '', // filled in at runtime
+        size: 0 // filled in at runtime
+      }
+    },
+    what: 'Unbuffered file fields'
+  },
 ];
+
+function pauseFileStreams(reqdata) {
+  var key;
+  for (key in reqdata) {
+    if (reqdata[key]._readableState)
+      reqdata[key].pause();
+  }
+  return reqdata;
+}
 
 function post(port, formvals) {
   var reqform = request.post('http://localhost:' + port).form(),
@@ -445,9 +544,18 @@ function assertDataEquals(expected, actual) {
   }
 }
 
+function cleanupTemp() {
+  // clean up any temporary files left over
+  fs.readdirSync(tmpdir).forEach(function(file) {
+    if (file !== '.gitignore')
+      fs.unlinkSync(path.join(tmpdir, file));
+  });
+}
+
 function next() {
   if ((t + 1) === tests.length)
     return;
+  cleanupTemp();
   var v = tests[++t];
   v.run.call(v);
 }
@@ -458,11 +566,7 @@ function makeMsg(what, msg) {
 }
 
 process.on('exit', function() {
-  // clean up any temporary files left over
-  fs.readdirSync(tmpdir).forEach(function(file) {
-    if (file !== '.gitignore')
-      fs.unlinkSync(file);
-  });
+  cleanupTemp();
 
   assert((t + 1) === tests.length,
          makeMsg('_exit',
