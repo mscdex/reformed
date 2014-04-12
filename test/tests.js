@@ -478,7 +478,8 @@ function makeServer(bbopts, srvCb, reqCb) {
     if (req.method === 'POST') {
       try {
         var cfg = {},
-            hadError = false,
+            responded = false,
+            finished = false,
             bb,
             key;
         for (key in (bbopts || {}))
@@ -487,12 +488,23 @@ function makeServer(bbopts, srvCb, reqCb) {
         bb = new Busboy(cfg);
         reqCb(bb);
         bb.on('error', function() {
-          hadError = true;
-          res.writeHead(400);
-          res.end();
+          if (!responded) {
+            responded = true;
+            res.writeHead(400);
+            res.end();
+          }
         }).on('finish', function() {
-          if (!hadError) {
+          finished = true;
+          if (!responded) {
+            responded = true;
             res.writeHead(200);
+            res.end();
+          }
+        });
+        req.on('end', function() {
+          if (!responded && !finished) {
+            responded = true;
+            res.writeHead(400);
             res.end();
           }
         });
