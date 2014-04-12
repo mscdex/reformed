@@ -10,7 +10,8 @@ var http = require('http'),
 
 var t = -1,
     group = path.basename(__filename, '.js') + '/',
-    tmpdir = __dirname + '/temp';
+    tmpdir = path.join(__dirname, 'temp'),
+    fixturesdir = path.join(__dirname, 'fixtures');
 var tests = [
   { run: function() {
       var self = this,
