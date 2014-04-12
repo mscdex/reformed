@@ -473,7 +473,10 @@ function makeMsg(what, msg) {
 
 process.on('exit', function() {
   // clean up any temporary files left over
-  fs.readdirSync(tmpdir).forEach(fs.unlinkSync);
+  fs.readdirSync(tmpdir).forEach(function(file) {
+    if (file !== '.gitignore')
+      fs.unlinkSync(file);
+  });
 
   assert((t + 1) === tests.length,
          makeMsg('_exit',
