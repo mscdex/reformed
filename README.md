@@ -60,14 +60,23 @@ app.post('/signup',
          }),
          form({
            firstName: {
-             rules: [ { test: /^.{0,50}$/, error: 'First name must be 50 characters or less' } ]
+             rules: [
+               { test: /^.{0,50}$/,
+                 error: 'First name must be 50 characters or less' }
+             ]
            },
            lastName: {
-             rules: [ { test: /^.{0,50}$/, error: 'Last name must be 50 characters or less' } ]
+             rules: [
+               { test: /^.{0,50}$/,
+                 error: 'Last name must be 50 characters or less' }
+             ]
            },
            emailAddress: {
              required: true,
-             rules: [ { test: isValidEmail, error: 'Invalid email address' } ]
+             rules: [
+               { test: isValidEmail,
+                 error: 'Invalid email address' }
+             ]
            },
            avatar: {
              filename: '', // use temporary file
@@ -79,13 +88,18 @@ app.post('/signup',
            username: {
              required: true,
              rules: [
-              { test: /^\w{6,20}$/, error: 'Username must be between 6 and 20 alphanumeric or underscore characters' },
-              { test: usernameUnused, error: 'Username already in use' }
-            ]
+              { test: /^\w{6,20}$/,
+                error: 'Username length must be between 6 and 20 alphanumeric characters' },
+              { test: usernameUnused,
+                error: 'Username already in use' }
+             ]
            },
            password: {
              required: true,
-             rules: [ { test: /^.{6,}$/, error: 'Password must be at least 6 characters' } ]
+             rules: [
+               { test: /^.{6,}$/,
+                 error: 'Password must be at least 6 characters' }
+             ]
            }
          }),
          function(err, req, res, next) {
@@ -145,14 +159,23 @@ function usernameUnused(key, val, cb) {
 
 var signupFormCfg = {
   firstName: {
-    rules: [ { test: /^.{0,50}$/, error: 'First name must be 50 characters or less' } ]
+    rules: [
+      { test: /^.{0,50}$/,
+        error: 'First name must be 50 characters or less' }
+    ]
   },
   lastName: {
-    rules: [ { test: /^.{0,50}$/, error: 'Last name must be 50 characters or less' } ]
+    rules: [
+      { test: /^.{0,50}$/,
+        error: 'Last name must be 50 characters or less' }
+    ]
   },
   emailAddress: {
     required: true,
-    rules: [ { test: isValidEmail, error: 'Invalid email address' } ]
+    rules: [
+      { test: isValidEmail,
+        error: 'Invalid email address' }
+    ]
   },
   avatar: {
     filename: '', // use temporary file
@@ -164,13 +187,18 @@ var signupFormCfg = {
   username: {
     required: true,
     rules: [
-     { test: /^\w{6,20}$/, error: 'Username must be between 6 and 20 alphanumeric or underscore characters' },
-     { test: usernameUnused, error: 'Username already in use' }
-   ]
+     { test: /^\w{6,20}$/,
+       error: 'Username length must be between 6 and 20 alphanumeric characters' },
+     { test: usernameUnused,
+       error: 'Username already in use' }
+    ]
   },
   password: {
     required: true,
-    rules: [ { test: /^.{6,}$/, error: 'Password must be at least 6 characters' } ]
+    rules: [
+      { test: /^.{6,}$/,
+        error: 'Password must be at least 6 characters' }
+    ]
   }
 };
 
