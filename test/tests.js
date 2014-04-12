@@ -512,7 +512,10 @@ function makeServer(bbopts, srvCb, reqCb) {
 }
 
 function assertDataEquals(expected, actual) {
-  var expKeys = Object.keys(expected),
+  if (expected === actual)
+    return;
+
+  var expKeys = (expected && Object.keys(expected)) || [],
       actKeys = (actual && Object.keys(actual)) || [];
 
   assert.equal(expKeys.length,
