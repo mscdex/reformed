@@ -262,6 +262,8 @@ Form methods
 
     *  **multiple** - < _boolean_ > - Allow multiple instances of the same field. If `true`, this will set the field data value to an array of values. If `false`, the first value is kept and subsequent values are ignored. The default is `false`.
 
+    * **strictNotMultiple** - < _boolean_ > - Set to `true` to raise an error when multiple values are detected and `multiple: true` is not set. Otherwise silently ignore additional values.
+
     *  **encoding** - < _string_ > - For buffered files, this is the Buffer encoding to use to convert the Buffer to a string. If `dataType` is present, that takes precedence over this setting. The default behavior is to leave the value as a Buffer.
 
     * **filename** - < _mixed_ > - Set to a string to be used as the path to save this file to. Otherwise set to `true` to save the file to a temporary file. Streamed files will have a value of `{ filename: filepath, size: filesize }`, where `filepath` is the path to the saved file and `filesize` is the file's total size.
