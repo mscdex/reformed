@@ -44,7 +44,7 @@ function usernameUnused(key, val, cb) {
            function(err, rows) {
     if (err)
       return cb(err);
-    cb(!rows || !rows.length);
+    cb(null, !rows || !rows.length);
   });
 }
 
@@ -151,7 +151,7 @@ function usernameUnused(key, val, cb) {
            function(err, rows) {
     if (err)
       return cb(err);
-    cb(!rows || !rows.length);
+    cb(null, !rows || !rows.length);
   });
 }
 
