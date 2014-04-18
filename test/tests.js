@@ -180,7 +180,7 @@ var tests = [
   { run: function() {
       var i = 1;
       function isNotEmpty(key, val, cb) {
-        setTimeout(function() { cb(val.length > 0); }, 100 * i++);
+        setTimeout(function() { cb(null, val.length > 0); }, 100 * i++);
       }
       var self = this,
           what = this.what,
@@ -216,7 +216,7 @@ var tests = [
   { run: function() {
       var i = 1;
       function isNotEmpty(key, val, cb) {
-        setTimeout(function() { cb(val !== 'Baz'); }, 100 * i++);
+        setTimeout(function() { cb(null, val !== 'Baz'); }, 100 * i++);
       }
       var self = this,
           what = this.what,
@@ -364,8 +364,8 @@ var tests = [
       var self = this,
           what = this.what,
           form = new Form({
-            csv: { filename: false, encoding: 'utf8' },
-            image: { filename: false }
+            csv: { buffered: true, encoding: 'utf8' },
+            image: { buffered: true }
           }),
           srvclose;
       makeServer(this.bbopts, function(port, fnclose) {
@@ -405,7 +405,7 @@ var tests = [
           what = this.what,
           form = new Form({
             csv: { filename: path.join(tmpdir, 'data.csv') },
-            image: { filename: '' }
+            image: { filename: true }
           }, { tmpdir: tmpdir }),
           srvclose;
       makeServer(this.bbopts, function(port, fnclose) {
@@ -454,7 +454,7 @@ var tests = [
       var self = this,
           what = this.what,
           form = new Form({
-            image: { filename: false, maxSize: 4096 }
+            image: { buffered: true, maxSize: 4096 }
           }, { tmpdir: tmpdir }),
           srvclose;
       makeServer(this.bbopts, function(port, fnclose) {
