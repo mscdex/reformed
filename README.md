@@ -262,15 +262,25 @@ Form methods
 
     *  **multiple** - < _boolean_ > - Allow multiple instances of the same field. If `true`, this will set the field data value to an array of values. If `false`, the first value is kept and subsequent values are ignored. The default is `false`.
 
-    *  **encoding** - < _string_ > - For buffered file fields, this is the Buffer encoding to use to convert the Buffer to a string. If `dataType` is present, that takes precedence over this setting. The default is to leave the value as-is.
+    *  **encoding** - < _string_ > - For buffered files, this is the Buffer encoding to use to convert the Buffer to a string. If `dataType` is present, that takes precedence over this setting. The default behavior is to leave the value as a Buffer.
 
-    * **filename** - < _mixed_ > - Set to a non-empty string to be used as the path to save this file to. Set to an empty string to save the file to a temporary file. Set to `false` to buffer the entire file contents in memory as a Buffer. **Note:** this setting is **required** for file fields
+    * **filename** - < _mixed_ > - Set to a string to be used as the path to save this file to. Otherwise set to `true` to save the file to a temporary file. Streamed files will have a value of `{ filename: filepath, size: filesize }`, where `filepath` is the path to the saved file and `filesize` is the file's total size.
+
+    * **buffered** - < _boolean_ > - For files, set to `true` to buffer the entire contents of the file instead of writing to disk. Buffered files will have a value of `{ data: filebuf, size: filesize }`, where `filebuf` is a Buffer (unless `dataType` is used to convert the value) containing the data and `filesize` indicating the total number of bytes in the file.
 
     *  **maxSize** - < _mixed_ > - Set to a number to restrict the max file size and use the default error message. Set to an object with `size` as the max file size and `error` as a custom string error message. If a max file size is set, it only takes effect if it is smaller than any configured busboy (global) max file size limit. The default is no limit (aside from any configured busboy limit).
 
     *  **rules** - < _array_ > - A list of rules to apply for validation for this field. The default is to apply no rules. Each rule has the following fields:
 
-        *  **test** - < _mixed_ > - Set to a regular expression or a function. If a regular expression is used with file fields (buffered or not), the contents of the files are converted to binary strings first before testing the regular expression. Functions are called synchronously if the function has (2) `(key, val)` parameters for non-file fields or (3) `(key, filename, filesize)` parameters for file fields. These synchronous functions must return a boolean to indicate passage of the test, an _Error_ instance to use instead of the defined `error` (no `key` property will be set -- useful for critical/system errors), or a string as a direct replacement for `error`. Functions are called asynchronously if the function has (3) `(key, val, callback)` parameters for non-file fields or (4) `(key, filename, filesize, callback)` parameters for file fields. These asynchronous functions must pass to the callback a boolean to indicate passage of the test, an _Error_ instance to use instead of the defined `error` (no `key` property will be set -- useful for critical/system errors), or a string as a direct replacement for `error`. All functions are called with `this` set to the current entire data storage object (this can be handy for example for checking for other fields or ensuring a max number of fields that have `multiple: true` set).
+        *  **test** - < _mixed_ > - Set to a regular expression or a function. Notes:
+
+            * If a regular expression test is used for any file fields, the contents of the files are first converted to binary strings before testing the regular expression.
+
+            * Functions are called **synchronously** if the function has (2) `(key, val)` parameters for non-file fields or (3) `(key, filename, filesize)` parameters for file fields. These synchronous functions must return a boolean to indicate passage of the test, an _Error_ instance to use instead of the defined `error` (no `key` property will be set -- useful to indicate critical/system errors), or a string as a direct replacement for `error`.
+
+            * Functions are called **asynchronously** if the function has (3) `(key, val, callback)` parameters for non-file fields or (4) `(key, filename, filesize, callback)` parameters for file fields. The callback has the parameters `(err, passedTest)`. For `err`, an _Error_ instance to use instead of the defined `error` (no `key` property will be set -- useful to indicate critical/system errors), or a string as a direct replacement for `error` (`key` property will be set). `passedTest` is a truthy value that should indicate if validation passed.
+
+            * All functions are called with `this` set to the current entire data storage object. This can be handy for example if you need to reference other field values or want to enforce a max number of values for a field with `multiple: true` set.
 
         *  **error** - < _string_ > - The (default) error message to use when the test fails.
 
@@ -278,4 +288,4 @@ Form methods
 
     * **tmpdir** - < _string_ > - A path to be used for storing temporary files for file fields that do not have a specific filename set. If this is not provided, `os.tmpdir()` will be used.
 
-* **parse**(< _Busboy_ >bb, < _function_ >callback) - _(void)_ - Starts reading form fields from the Busboy instance `bb`. `callback` is passed an _Error_ object on error. If a field didn't pass validation, the error passed to the callback will have a `key` property set to the field name that failed validation. In case there were no errors, any/all form data is available on `form.data`, which could be undefined if nothing was submitted and no required fields were configured. For non-file fields, the value is just the literal data value. For non-buffered file fields, the value is an object with `filename` set to the path of the stored file and `size` set to the size of the file in bytes. For buffered file fields, the value is an object with `data` set to a Buffer containing the file contents and `size` set to the `data` length in bytes.
+* **parse**(< _Busboy_ >bb, < _function_ >callback) - _(void)_ - Starts reading form fields from the Busboy instance `bb`. `callback` is passed an _Error_ object on error. If a field didn't pass validation, the error object passed to the callback will have a `key` property set to the field name that failed validation. In case there were no errors, any/all form data is available on `form.data`.
