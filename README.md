@@ -270,6 +270,8 @@ Form methods
 
     * **buffered** - < _boolean_ > - For files, set to `true` to buffer the entire contents of the file instead of writing to disk. Buffered files will have a value of `{ data: filebuf, size: filesize }`, where `filebuf` is a Buffer (unless `dataType` is used to convert the value) containing the data and `filesize` indicating the total number of bytes in the file.
 
+    * **stream** - < _function_ > - For files, set to a callback that accepts (and consumes) the Readable stream for this file. Streamed files will have a value of `{ size: filesize }`, where `filesize` indicates the total number of bytes streamed. RegExp-based rules are ignored in this case. **Note:** Remember that if a form upload results in failure (due to validation rules or otherwise), the place where you streamed the file to will still be there (if that matters for your application), so you may want to delete it in case of form upload failure.
+
     *  **maxSize** - < _mixed_ > - Set to a number to restrict the max file size and use the default error message. Set to an object with `size` as the max file size and `error` as a custom string error message. If a max file size is set, it only takes effect if it is smaller than any configured busboy (global) max file size limit. The default is no limit (aside from any configured busboy limit).
 
     *  **rules** - < _array_ > - A list of rules to apply for validation for this field. The default is to apply no rules. Each rule has the following fields:

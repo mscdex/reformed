@@ -481,6 +481,46 @@ var tests = [
     expected: undefined,
     what: 'Unbuffered file field, max size exceeded'
   },
+  { run: function() {
+      var self = this,
+          what = this.what,
+          nb = 0,
+          form = new Form({
+            image: {
+              stream: function(stream) {
+                stream.on('data', function(d) { nb += d.length; });
+                stream.resume();
+              }
+            }
+          }, { tmpdir: tmpdir }),
+          srvclose;
+      makeServer(this.bbopts, function(port, fnclose) {
+        srvclose = fnclose;
+        post(port, self.reqdata);
+      }, function(bb) {
+        srvclose();
+        form.parse(bb, function(err) {
+          assert(!err, makeMsg(what, 'Unexpected form parse error: ' + err));
+          assertDataEquals(self.expected, form.data);
+          assert(self.expected.image.size === nb,
+                 makeMsg(what, 'Stream callback byte count mismatch\nExpected: '
+                             + self.expected.image.size
+                             + '\nActual: '
+                             + nb));
+          next();
+        });
+      });
+    },
+    bbopts: {},
+    // bw 4/11/13 -- request/form-data/combined-stream/delayed-stream somehow
+    // ends up missing all stream data even on node v0.10 where streams are
+    // "paused" from the start, so we pause explicitly as a workaround ...
+    reqdata: pauseFileStreams({
+      image: fs.createReadStream(path.join(fixturesdir, 'image.jpg'))
+    }),
+    expected: { image: { size: 17618 } },
+    what: 'Streamed file field'
+  },
 ];
 
 function pauseFileStreams(reqdata) {
