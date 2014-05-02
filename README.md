@@ -110,15 +110,11 @@ app.post('/signup',
          },
          function(req, res, next) {
            if (req.form.error) {
-             // `req.form.data` will always be undefined in case of error
              return res.send(400, 'Form error for field "'
                                   + req.form.error.key
                                   + '": '
                                   + req.form.error);
            }
-
-           // if we had no required fields, `req.form.data` could be undefined
-           // if no form data was submitted
 
            // use `req.form.data` here ...
 
@@ -217,14 +213,10 @@ http.createServer(function(req, res) {
 
       form.parse(bb, function(err) {
         if (err) {
-          // `form.data` will always be undefined in case of error
           res.writeHead(err.key === undefined ? 500 : 400);
           res.end(''+err);
           return;
         }
-
-        // if we had no required fields, `form.data` could be undefined
-        // if no form data was submitted
 
         // use `form.data` here ...
 
