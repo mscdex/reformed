@@ -79,7 +79,7 @@ app.post('/signup',
              ]
            },
            avatar: {
-             filename: '', // use temporary file
+             filename: true, // use temporary file
              maxSize: {
                size: 1 * 1024 * 1024, // 1MB
                error: 'Avatar file size too large (must be 1MB or less)'
@@ -174,7 +174,7 @@ var signupFormCfg = {
     ]
   },
   avatar: {
-    filename: '', // use temporary file
+    filename: true, // use temporary file
     maxSize: {
       size: 1 * 1024 * 1024, // 1MB
       error: 'Avatar file size too large (must be 1MB or less)'
