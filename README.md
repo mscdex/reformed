@@ -9,7 +9,7 @@ Requirements
 
 * [node.js](http://nodejs.org/) -- v0.10.0+
 * [connect-busboy](https://github.com/mscdex/connect-busboy) (only useful when using this module with [Express](http://expressjs.com))
-* [busboy](https://github.com/mscdex/busboy) (only needed if not using with [Express](http://expressjs.com))
+* [busboy](https://github.com/mscdex/busboy) (only needed if not using `connect-busboy`)
 
 
 Install
